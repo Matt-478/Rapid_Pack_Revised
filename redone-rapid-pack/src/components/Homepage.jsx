@@ -12,6 +12,14 @@ function Homepage() {
     }
   },[query])
 
+  useEffect(() => {
+    if(realState.length > 0) {
+      fetchWikipediaCitySummary(realState)
+      // fetchPexelsData(realState)
+      // fetchPexelsVideos(realState)
+    }
+  },[realState])
+
   const handleChange = (e) => {
     setQuery(e.target.value)
     // console.log(e.target.value)
