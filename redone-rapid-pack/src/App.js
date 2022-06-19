@@ -15,6 +15,8 @@ function App() {
         <a href="https://www.linkedin.com/in/matiss-komlevs-20343020b/" target="_blank"><p>Linkedin</p></a>
         <a href="https://github.com/Matt-478" target="_blank"><p>Github</p></a>
       </footer>
+
+      
     </div>
   )
 }

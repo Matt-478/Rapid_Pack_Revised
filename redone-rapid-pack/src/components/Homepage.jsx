@@ -3,19 +3,54 @@ import { useState, useEffect } from 'react';
 
 function Homepage() {
   const[query, setQuery] = useState("")
+  const[realState, setRealState] = useState("")
+  const[cityInfo, setCityInfo] = useState([])
 
+  useEffect(()=>{
+    if(query.length >= 4) {
+      setRealState(query)
+    }
+  },[query])
 
   const handleChange = (e) => {
     setQuery(e.target.value)
+    // console.log(e.target.value)
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // setRealState(query)
+    // console.log(e.target.value)
+    setRealState(query)
+    console.log(realState)
+  }
+
+  const handleTravelCity = (city) => {
+    setRealState(city)
+  }
+
+  function toTitleCase (str) {
+    let text = str
+    text = text.toLowerCase()
+      .split(' ')
+      .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+      .join(' ');
+    return text
+  }
+
+  async function fetchWikipediaCitySummary(query) {
+    const response = await fetch("https://en.wikipedia.org/api/rest_v1/page/summary/" + query + "?redirect=false")
+    const data = await response.json()
+    setCityInfo(data)
+    console.log(cityInfo)
+
+    // checking if the city typed is the same as in the query
+    // console.log(query)
   }
 
 
   return (
+    <>
+ <div className="App">
       <div className="header-bg">
         <div className="head-line">
           <h2>"Fuck it, let's go somewhere"</h2>
@@ -36,6 +71,38 @@ function Homepage() {
             </div>
           </div>
       </div>
+
+
+      <div className="header-bg-dark">
+       <div className="p-page">
+
+
+      <div className="travel-options-box-container" style={{display: realState.length >4 ? "none" : ""}}>
+          <div className="travel-options-box relative" onClick={() => handleTravelCity("Dublin")}><h2>Dublin</h2></div>
+          <div className="travel-options-box relative" onClick={() => handleTravelCity("Paris")}><h2>Paris</h2></div>
+          <div className="travel-options-box relative" onClick={() => handleTravelCity("Tokyo")}><h2>Tokyo</h2></div>
+          <div className="travel-options-box relative" onClick={() => handleTravelCity("Berlin")}><h2>Berlin</h2></div>
+      </div>
+
+      <div className="left-area-top">
+        <h3>{query && toTitleCase(query) || realState && toTitleCase(realState)}</h3>
+          <div className="d-flex-space">
+          <div className="left-side">
+            <p>
+              {cityInfo.extract}
+            </p>
+          </div>
+          <div className="right-side">      
+          </div>
+          </div>
+      </div>
+      </div>
+    </div>
+    </div> {/* padding div */}
+
+
+      
+  </>
   )
 }
 
