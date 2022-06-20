@@ -15,8 +15,6 @@ function Homepage() {
   useEffect(() => {
     if(realState.length > 0) {
       fetchWikipediaCitySummary(realState)
-      // fetchPexelsData(realState)
-      // fetchPexelsVideos(realState)
     }
   },[realState])
 
