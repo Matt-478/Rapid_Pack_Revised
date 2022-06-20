@@ -7,6 +7,8 @@ function Homepage() {
   const[query, setQuery] = useState("")
   const[realState, setRealState] = useState("")
   const[cityInfo, setCityInfo] = useState([])
+  const[photos, setPhotos] = useState([])
+  const[videos, setVideos] = useState([])
   const [mediaArray, setMediaArray] = useState([])
 
   useEffect(()=>{
@@ -19,19 +21,35 @@ function Homepage() {
     if(realState.length > 3) {
       fetchWikipediaCitySummary(realState)
       fetchPexelsData(realState)
+      fetchPexelsVideos(realState)
     }
   },[realState])
 
+  useEffect(() => {
+    let bigArray = [...photos, ...videos]
+    console.log("big", bigArray)
+
+    const shuffleArray = (arr) => {
+      for (let i = arr.length - 1; i > 0; i--) {
+          let j = Math.floor(Math.random() * (i + 1));
+          let temp = arr[i];
+          arr[i] = arr[j];
+          arr[j] = temp;
+      }
+  }  
+    shuffleArray(bigArray)
+    // console.log("big big ", shuffleArray)
+    // setMediaArray(shuffleArray)
+    setMediaArray(bigArray)
+  }, [photos, videos])
+
   const handleChange = (e) => {
     setQuery(e.target.value)
-    // console.log(e.target.value)
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // console.log(e.target.value)
     setRealState(query + " ")
-    // console.log(realState)
   }
 
   const handleTravelCity = (city) => {
@@ -68,7 +86,7 @@ function Homepage() {
       const {photos} = await response.json()
       console.log('!!photos', photos)
       if (photos) {
-        setMediaArray(photos)
+        setPhotos(photos)
         console.log('!!photos', photos)
       } else {
         console.log("no - photos")
@@ -77,6 +95,28 @@ function Homepage() {
       // console.log(pexelsPhotos)
 
       // push these results up to Homepage array or push these to an array and then use it in homepage
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async function fetchPexelsVideos (query) {
+    try {
+      const response = await fetch("https://api.pexels.com/videos/search?query=" + query + "&per_page=15", {
+         // &size=large
+        "method":"GET",
+        "headers": {          
+        "Authorization": "563492ad6f91700001000001d99276bcb4d4402fbf7f8f502c81c2ba"}
+      })
+      const {videos} = await response.json()
+      console.log('!!videos', videos)
+      if (videos) {
+        setVideos(videos)
+      } else {
+        console.log("no")
+      }
+      // setPexelsVideos(data.videos) 
+      // return data.videos
     } catch (error) {
       console.log(error)
     }
