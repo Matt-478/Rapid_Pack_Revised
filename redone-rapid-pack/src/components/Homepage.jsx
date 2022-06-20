@@ -1,10 +1,13 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
+import VideoCard from './VideoCard'
+import ImageCard from './ImageCard'
 
 function Homepage() {
   const[query, setQuery] = useState("")
   const[realState, setRealState] = useState("")
   const[cityInfo, setCityInfo] = useState([])
+  const [mediaArray, setMediaArray] = useState([])
 
   useEffect(()=>{
     if(query.length >= 4) {
@@ -13,8 +16,9 @@ function Homepage() {
   },[query])
 
   useEffect(() => {
-    if(realState.length > 0) {
+    if(realState.length > 3) {
       fetchWikipediaCitySummary(realState)
+      fetchPexelsData(realState)
     }
   },[realState])
 
@@ -26,8 +30,8 @@ function Homepage() {
   const handleSubmit = (e) => {
     e.preventDefault()
     // console.log(e.target.value)
-    setRealState(query)
-    console.log(realState)
+    setRealState(query + " ")
+    // console.log(realState)
   }
 
   const handleTravelCity = (city) => {
@@ -53,6 +57,30 @@ function Homepage() {
     // console.log(query)
   }
 
+  async function fetchPexelsData (query) {
+    try {
+      const response = await fetch("https://api.pexels.com/v1/search?query=" + query + "&per_page=30", {
+        // &size=large
+        "method":"GET",
+        "headers": {          
+        "Authorization": "563492ad6f91700001000001d99276bcb4d4402fbf7f8f502c81c2ba"}
+      })
+      const {photos} = await response.json()
+      console.log('!!photos', photos)
+      if (photos) {
+        setMediaArray(photos)
+        console.log('!!photos', photos)
+      } else {
+        console.log("no - photos")
+      }
+      // setPexelsPhotos(photos)
+      // console.log(pexelsPhotos)
+
+      // push these results up to Homepage array or push these to an array and then use it in homepage
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <>
@@ -105,6 +133,26 @@ function Homepage() {
       </div>
     </div>
     </div> {/* padding div */}
+
+    <div className="image-display"> 
+          <ul style={{paddingBottom: query.length >= 4 ? "39px" : "none"}}>
+              {
+                mediaArray && mediaArray.map(picOrVideo => picOrVideo.alt ? (
+                  <ImageCard
+                    src={picOrVideo.src.medium}
+                    key={picOrVideo.id}
+                    query={query}
+                  />
+                ):(
+                  <VideoCard
+                    id={picOrVideo.id}
+                    src={picOrVideo.video_files[0].link}
+                    query={query}
+                  />
+                ))
+              }
+          </ul>
+    </div>
 
 
       
